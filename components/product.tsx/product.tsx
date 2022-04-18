@@ -3,7 +3,16 @@ import { loadStripe } from '@stripe/stripe-js';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-export function Pioneer() {
+
+interface Props {
+  product: {
+    id: string;
+    description?: string;
+    images: string[];
+  }
+}
+
+export function Product({ product }: Props) {
   React.useEffect(() => {
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
@@ -16,15 +25,20 @@ export function Pioneer() {
     }
   }, []);
 
+  const { id, description, images } = product;
+
   return (
-    <form action="/api/checkout_sessions" method="POST">
-      <section>
-        <button type="submit" role="link">
-          Checkout
-        </button>
-      </section>
-      <style jsx>
-        {`
+    <article>
+      <img src={images[0]} style={{ width: "300px", height: "300px" }} />
+      {description}
+      <form action={`/api/checkout_sessions?id=${id}`} method="POST">
+        <section>
+          <button type="submit" role="link">
+            Checkout
+          </button>
+        </section>
+        <style jsx>
+          {`
           section {
             background: #ffffff;
             display: flex;
@@ -49,7 +63,9 @@ export function Pioneer() {
             opacity: 0.8;
           }
         `}
-      </style>
-    </form>
+        </style>
+      </form>
+    </article>
+
   );
 }

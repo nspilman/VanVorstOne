@@ -1,29 +1,34 @@
 import type { NextPage } from 'next'
 import type { InferGetStaticPropsType } from 'next'
-import { Pioneer } from '../components/pioneer'
-import { loadStripe } from "@stripe/stripe-js";
+import { Product } from '../components/product.tsx'
 import Layout from './layout';
+import Stripe from 'stripe';
 
 
 export async function getStaticProps() {
   const revalidatePropsInterval = 4 * 60 * 60
 
+
+  const stripe = new Stripe(
+    process.env.STRIPE_SECRET_KEY || "",
+    { apiVersion: "2020-08-27" },
+  );
+
+  const products = await (await stripe.products.list()).data
+
   return {
     revalidate: revalidatePropsInterval,
-    props: {}
+    props: { products }
   }
 }
 
-const stripe = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
-
-console.log({ stripe })
 
 const Home: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <Layout>
-      <Pioneer />
+      <>
+        {props.products.map(product => <Product product={product} />)}
+      </>
     </Layout>
   )
 }
