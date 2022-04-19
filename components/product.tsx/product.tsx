@@ -1,15 +1,11 @@
 import React from 'react';
-import { loadStripe } from '@stripe/stripe-js';
+import Stripe from 'stripe';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
 
 interface Props {
-  product: {
-    id: string;
-    description?: string;
-    images: string[];
-  }
+  product: Stripe.Product
 }
 
 export function Product({ product }: Props) {
